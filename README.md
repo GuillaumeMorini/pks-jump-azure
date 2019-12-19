@@ -65,12 +65,27 @@ ADMIN_USERNAME=ubuntu
 ssh-keygen -t rsa -f ~/${JUMPBOX_NAME} -C ${ADMIN_USERNAME}
 ```
 
-### Create and Populate an  Azure Key Vault
+### Create the Resource Group for Azure Key Vault if it does not exist
+
+```bash
+## Create the resource group
+az group create --name ${VAULT_RG} --location ${AZURE_REGION}
+```
+
+### Create the Azure Key Vault if it does not exist
+
+```bash
+## Create the key vault
+az keyvault create --resource-group ${VAULT_RG} --name ${AZURE_VAULT} --location ${AZURE_REGION}
+```
+
+### Populate an  Azure Key Vault
 
 ```bash
 ## Set temporary Variables
 PIVNET_UAA_TOKEN=<your pivnet refresh token>
 SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --name ServicePrincipalforPKS --output json)
+## Create the
 ## SET the Following Secrets from the temporary Variables
 az keyvault secret set --vault-name ${AZURE_VAULT} \
 --name "AZURECLIENTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .appId) --output none
